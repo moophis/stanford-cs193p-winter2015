@@ -8,7 +8,7 @@
 
 import Foundation
 
-class CalculateBrain
+class CalculateBrain: Printable
 {
     // Enum for operands and operators
     private enum Op: Printable {
@@ -29,6 +29,17 @@ class CalculateBrain
                 case .BinaryOperation(let symbol, _):
                     return symbol
                 }
+            }
+        }
+    }
+    
+    // The description of the class showing the complete math expression
+    var description: String {
+        get {
+            if let desc = restoreExpression(opStack).expr {
+                return "CurrentExpression: \(desc)"
+            } else {
+                return "(No description for CalculateBrain to show)"
             }
         }
     }
@@ -64,6 +75,39 @@ class CalculateBrain
         knownConstants["π"] = M_PI
     }
     
+    // Restore the math expression from the reverse-polish style input
+    private func restoreExpression(ops: [Op]) -> (expr: String?, remainingOps: [Op]) {
+        if !ops.isEmpty {
+            var remainingOps = ops
+            let op = remainingOps.removeLast()
+            switch op {
+            case .Operand(let operand, let symbol):
+                if symbol != nil {
+                    return (symbol, remainingOps)
+                } else {
+                    return (operand?.toString(), remainingOps)
+                }
+            case .UnaryOperation(let symbol, _):
+                let opEvaluation = restoreExpression(remainingOps)
+                if let unaryExpr = opEvaluation.expr {
+                    let ret = "\(symbol)(\(unaryExpr))"
+                    return (ret, opEvaluation.remainingOps)
+                }
+            case .BinaryOperation(let symbol, _):
+                let rightEvaluation = restoreExpression(remainingOps)
+                if let rightExpr = rightEvaluation.expr {
+                    let leftEvaluation = restoreExpression(rightEvaluation.remainingOps)
+                    if let leftExpr = leftEvaluation.expr {
+                        let ret = "(\(leftExpr)\(symbol)\(rightExpr))"
+                        return (ret, leftEvaluation.remainingOps)
+                    }
+                }
+            }
+        }
+        return (nil, ops)
+    }
+    
+    // Evaluate the math expression and calculate the result
     private func evaluate(ops: [Op]) -> (result: Double?, remainingOps: [Op]) {
         if !ops.isEmpty {
             var remainingOps = ops
@@ -96,6 +140,7 @@ class CalculateBrain
     func evaluate() -> Double? {
         let (result, remainder) = evaluate(opStack)
         println("\(opStack) with \(remainder)")
+        println(self)
         return result
     }
     
@@ -155,5 +200,12 @@ class CalculateBrain
     func clearVariables() {
         variableValues.removeAll(keepCapacity: true)
         assert(variableValues.isEmpty)
+    }
+}
+
+// Utility Extensions
+extension Double {
+    func toString() -> String {
+        return String(format: "%.1f", self)
     }
 }

@@ -111,12 +111,13 @@ class ViewController: UIViewController
     
     var displayValue: Double? {
         get {
-            if let doubleString = NSNumberFormatter().numberFromString(display.text!) {
-//                println("doubleString: \(doubleString)")
-                return doubleString.doubleValue
-            } else {
-                return nil
-            }
+//            if let doubleString = NSNumberFormatter().numberFromString(display.text!) {
+////                println("doubleString: \(doubleString)")
+//                return doubleString.doubleValue
+//            } else {
+//                return nil
+//            }
+            return NSNumberFormatter().numberFromString(display.text!)?.doubleValue
         }
         set {
             // newValue is a reserved value by Swift
