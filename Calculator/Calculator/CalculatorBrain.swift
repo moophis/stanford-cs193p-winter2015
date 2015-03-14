@@ -139,8 +139,8 @@ class CalculateBrain: Printable
     // Evaluate the expression stored in the op stack
     func evaluate() -> Double? {
         let (result, remainder) = evaluate(opStack)
-        println("\(opStack) with \(remainder)")
-        println(self)
+//        println("\(opStack) with \(remainder)")
+//        println(self)
         return result
     }
     
@@ -167,7 +167,7 @@ class CalculateBrain: Printable
         if let value = variableValues[symbol] {
             return pushOperand(value, symbol: symbol)
         }
-        // Then it mush be an unregistered variable
+        // Then it must be an unregistered variable
         return pushOperand(nil, symbol: symbol)
     }
     
@@ -183,7 +183,7 @@ class CalculateBrain: Printable
     func updateVariableInOpStack(symbol: String, value: Double) {
         for (index, val) in enumerate(opStack) {
             switch val {
-            case .Operand(nil, let name):
+            case .Operand(_, let name):
                 if name == symbol {
                     opStack[index] = Op.Operand(value, symbol)
                 }

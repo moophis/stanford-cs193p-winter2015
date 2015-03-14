@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ViewController: UIViewController
+class CalculatorViewController: UIViewController
 {
     @IBOutlet weak var display: UILabel!
     
@@ -70,7 +70,6 @@ class ViewController: UIViewController
         displayValue = brain.evaluate()
         
         let t = brain.variableValues["M"]!
-        println("Variable M = \(t)")
     }
     
     @IBAction func clearAll(sender: AnyObject) {
@@ -111,12 +110,6 @@ class ViewController: UIViewController
     
     var displayValue: Double? {
         get {
-//            if let doubleString = NSNumberFormatter().numberFromString(display.text!) {
-////                println("doubleString: \(doubleString)")
-//                return doubleString.doubleValue
-//            } else {
-//                return nil
-//            }
             return NSNumberFormatter().numberFromString(display.text!)?.doubleValue
         }
         set {
@@ -126,7 +119,24 @@ class ViewController: UIViewController
         }
     }
     
-    // TODO: currently scientific input is not supported
+    // Segue to GrapherView
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        // Get the new view controller using segue.destinationViewController.
+        // Pass the selected object to the new view controller.
+        switch segue.identifier {
+        case "showGrapher":
+            if let grapher = segue.destinationViewController as? GrapherViewController {
+                grapher.titleContent = brain.description
+                grapher.brain = brain
+                grapher.updateUI()
+            } else {
+                println("segue failed...\(segue.destinationViewController.description)")
+            }
+        default: break
+        }
+    }
+    
+    // Note: currently scientific input is not supported
     func validateNumber(str: String) -> Bool {
         println("String to be validated: \(str)")
         var firstChecked: Bool = false
